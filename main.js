@@ -11,18 +11,18 @@ class ProductManager{
         const id = Math.random().toString(30).substring(2);
         return id
     }
-    #getProductById(id){
-        const searchProduct = this.products.find((value)=>{
-            if(value.id == id){
-                console.log(searchProduct);
-            }
-            if (searchProduct == undefined) {
-                console.log('Not Found');
-            }
-        })
-    }
+    getProductById(id){
+        const searchProduct = this.products.find((value)=> value.id == id);
+        if (searchProduct) {
+            console.log(searchProduct);
+            return searchProduct;
+        } else {
+            console.log('Not Found');
+            return undefined;
+        }
+    };
     #verificateCode(code){
-        const searchCode = this.products.map((value) => value.code !== code);
+        const searchCode = this.products.map((value)=> value.code == code);
         return searchCode;
     }
     addProduct(title, description, price, thumbnail, code, quotas){
@@ -35,7 +35,7 @@ class ProductManager{
             quotas: quotas,
             id: this.#generateId()
         }
-        if(Object.values(newProduct).some((values) => values == null || values == undefined || values == '')){
+        if(Object.values(newProduct).some((values) => values == null || values == undefined || values == '' || this.#verificateCode(values.code))){
             console.log('Error! Fields cannot be empty or repeated.')
         }else{
             this.products = [...this.products, newProduct];
@@ -44,7 +44,9 @@ class ProductManager{
 }
 
 const paquete = new ProductManager();
-paquete.addProduct('paris', 'balbal', 123, 'image', 555, 20);
-paquete.addProduct('roma', 'hshsh', 777, 'hola', 222, 9);
 paquete.getProducts();
-
+paquete.addProduct('nueva york', 'La ciudad que nunca duerme', 1200, 'image', 'abc123', 7);
+paquete.addProduct('paris', 'La ciudad de la moda y el amor', 1500, 'image2', 'abc1234', 9);
+paquete.addProduct('tokio', 'La ciudad más grande del mundo', 1700, 'image3', 'abc134', 11);
+paquete.addProduct('sydney', 'La ciudad más linda de Australia', 2000, 'image4', 'abc124', 12);
+paquete.getProducts();
