@@ -2,11 +2,20 @@ const fs = require('fs');
 
 class ProductManager{
     constructor(){
-        this.path = './products.txt'
+        this.path = './products.json'
         this.products = [];
     }
 
     static id = 0;
+
+    async #verificateCode(code){
+        for (let i = 0; i < this.products.length; i++){
+            if (this.products[i].code == code){
+                console.log(`The code ${code} has already been used.`);
+                break;
+            }
+        }
+    }
 
     async addProduct(title, description, price, thumbnail, code, quotas){
         this.#verificateCode(code);
@@ -56,11 +65,11 @@ class ProductManager{
         console.log('Product successfully removed')
     }
 
-    async updateProduct(id, ... product){
+    async updateProduct({id, ...product}){
         await this.deleteProduct(id);
-        let oldProductFile = await this.readProducts();
-        let newProduct = [{...product, id}, ...oldProductFile];
-        await fs.promises.writeFile(this.path, JSON.stringify(newProduct));
+        let oldProductsFile = await this.readProducts();
+        let updateFile = [{...product, id}, ...oldProductsFile];
+        await fs.promises.writeFile(this.path, JSON.stringify(updateFile));
     }
 }
 
@@ -76,8 +85,8 @@ paquete.updateProduct({
     title: 'tokio',
     description: 'La ciudad más grande del mundo',
     price: 200000,
-    thumbnail: image3,
-    code: abc134,
+    thumbnail: 'image3',
+    code: 'abc134',
     quotas: 11,
     id: 3,
 });
