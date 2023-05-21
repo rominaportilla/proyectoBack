@@ -1,5 +1,7 @@
+// este lo corremos como node src/server.js
 import express from 'express';
-import ProductManager from "./components/ProductManager.js";
+import { routerProducts } from './routes/products.router.js';
+import { routerCarts } from './routes/carts.router.js';
 
 const app = express();
 const port = 8080;
@@ -7,28 +9,16 @@ const port = 8080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const paquete = new ProductManager();
-const readProducts = paquete.readProducts();
+// Todos nuestros endpoints
+app.use('/api/products', routerProducts);
+app.use('/api/carts', routerCarts);
 
-console.log(await readProducts)
-
-// este lo corremos como node src/server.js
-
-app.get('/products', async (req, res) => {
-    // usamos parseInt para que el limite sea un número y no un string
-    let limit = parseInt(req.query.limit);
-    if (!limit) return res.json(await readProducts);
-    let allProducts = await readProducts;
-    let limitProducts = allProducts.slice(0, limit);
-    res.json(await limitProducts);
-})
-
-app.get('/products/:id', async (req, res) => {
-    let id = parseInt(req.params.id);
-    let allProducts = await readProducts;
-    let productById = allProducts.find(product => product.id === id);
-    if (!productById) return res.send('Error. Not found.')
-    res.json(productById)
+app.get('*', (req, res) => {
+    return res.status(404).json({
+        status: 'Error',
+        msg: 'Not Found',
+        data: {}
+    })
 })
 
 const server = app.listen(port, () => {

@@ -1,3 +1,6 @@
+//@ts-check
+// este lo corro con node src/components/ProductManager.js
+
 // ReferenceError: require is not defined in ES module scope, you can use import instead
 //const fs = require('fs');
 // por eso lo hago con import
@@ -6,7 +9,7 @@ import {promises as fs} from 'fs';
 
 export default class ProductManager{
     constructor(){
-        this.path = './products.json'
+        this.path = './src/models/products.json'
         this.products = [];
     }
 
@@ -40,6 +43,7 @@ export default class ProductManager{
         }
 
         await fs.writeFile(this.path, JSON.stringify(this.products))
+        return 'producto agregado'
     }
 
     async readProducts(){
@@ -48,8 +52,7 @@ export default class ProductManager{
     }
 
     async getProducts(){
-        let getProductsFile = await this.readProducts();
-        return console.log(getProductsFile)
+        return await this.readProducts();
     }
 
     async getProductById(id){
@@ -74,6 +77,15 @@ export default class ProductManager{
         let oldProductsFile = await this.readProducts();
         let updateFile = [{...product, id}, ...oldProductsFile];
         await fs.writeFile(this.path, JSON.stringify(updateFile));
+    }
+
+    //------------------------
+    async writeProducts(product){
+        let products = await fs.readFile(this.path, 'utf-8');
+        let productsParse = JSON.parse(products);
+        let productsAll = [...productsParse, product];
+        await fs.writeFile(this.path, JSON.stringify(productsAll));
+        return 'producto agregado'
     }
 }
 
