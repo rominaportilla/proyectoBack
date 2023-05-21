@@ -15,16 +15,30 @@ export default class ProductManager{
 
     static id = 0;
 
-    async #verificateCode(code){
+    /* async #verificateCode(code){
         for (let i = 0; i < this.products.length; i++){
             if (this.products[i].code == code){
                 console.log(`The code ${code} has already been used.`);
                 break;
             }
         }
+    } */
+
+    async readProducts(){
+        let readProductsFile = await fs.readFile(this.path, 'utf-8');
+        return JSON.parse(readProductsFile);
     }
 
-    async addProduct(title, description, price, thumbnail, code, quotas){
+    async writeProducts(product){
+        await fs.writeFile(this.path, JSON.stringify(product))
+    }
+
+    async searchProduct(id){
+        let productById = await this.readProducts();
+        return productById.find(product => product.id === id);
+    }
+
+    /* async addProduct(title, description, price, thumbnail, code, quotas){
         this.#verificateCode(code);
         ProductManager.id++;
         let newProduct = {
@@ -44,11 +58,18 @@ export default class ProductManager{
 
         await fs.writeFile(this.path, JSON.stringify(this.products))
         return 'producto agregado'
-    }
+    } */
 
-    async readProducts(){
-        let readProductsFile = await fs.readFile(this.path, 'utf-8');
-        return JSON.parse(readProductsFile);
+    async addProduct(product){
+        let productsOld = await this.readProducts();
+        ProductManager.id++;
+        let newProduct = {
+            ...product,
+            id: ProductManager.id
+        }
+        let productsAll = [...productsOld, newProduct];
+        await this.writeProducts(productsAll);
+        return 'producto agregado'
     }
 
     async getProducts(){
@@ -56,37 +77,50 @@ export default class ProductManager{
     }
 
     async getProductById(id){
-        let getProductFile = await this.readProducts();
+        /* let getProductFile = await this.readProducts();
         let searchProduct = getProductFile.find((product) => product.id === id);
         if(searchProduct){
-            console.log(searchProduct)
+            return searchProduct
         }else{
-            console.log('Not Found')
-        }
+            return 'Not Found'
+        } */
+
+        let productById = await this.searchProduct(id);
+        if(!productById) return 'producto no encontrado';
+        return productById;
     }
 
     async deleteProduct(id){
-        let deleteProductFile = await this.readProducts();
-        let searchProduct = deleteProductFile.filter((products) => products.id != id);
-        await fs.writeFile(this.path, JSON.stringify(searchProduct));
-        console.log('Product successfully removed')
+        let productsFile = await this.readProducts();
+        //let searchProduct = productsFile.filter((products) => products.id != id);
+        let searchProduct = productsFile.some(product => product.id === id);
+        if(searchProduct){
+            let filterProducts = productsFile.filter(product => product.id != id);
+            await this.writeProducts(filterProducts);
+            return 'producto eliminado'
+        }
+        return 'el producto que quiere eliminar no existe'
+        //await fs.writeFile(this.path, JSON.stringify(searchProduct));
+        //console.log('Product successfully removed')
     }
 
-    async updateProduct({id, ...product}){
+    async updateProduct({id, product}){
+        let productById = await this.searchProduct(id);
+        if(!productById) return 'producto no encontrado';
         await this.deleteProduct(id);
         let oldProductsFile = await this.readProducts();
-        let updateFile = [{...product, id}, ...oldProductsFile];
-        await fs.writeFile(this.path, JSON.stringify(updateFile));
+        let updateFile = [{...product, id: id}, ...oldProductsFile];
+        //await fs.writeFile(this.path, JSON.stringify(updateFile));
+        await this.writeProducts(updateFile);
+        return 'producto actualizado'
     }
 
     //------------------------
-    async writeProducts(product){
-        let products = await fs.readFile(this.path, 'utf-8');
-        let productsParse = JSON.parse(products);
+    /* async writeProducts(product){
         let productsAll = [...productsParse, product];
         await fs.writeFile(this.path, JSON.stringify(productsAll));
         return 'producto agregado'
-    }
+    } */
 }
 
 /* const paquete = new ProductManager();
