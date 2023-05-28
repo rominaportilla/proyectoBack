@@ -1,0 +1,51 @@
+<div class="realTimeProductsContainer">
+    <form id="formProducts">
+        <div>
+            <label for="title">Title:</label>
+            <input id="titleProduct" type="text" name="title" placeholder="Title" required/>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <input id="descriptionProduct" type="text" name="description" placeholder="Description" required/>
+        </div>
+        <div >
+            <label for="price">Price:</label>
+            <input id="priceProduct" type="number" name="price" placeholder="Price" required/>
+        </div>
+        <div>
+            <label for="thubmail">Thubmail:</label>
+            <input id="thumbnailProduct" type="text" name="thubmail" placeholder="Thubmail"/>
+        </div>
+        <div>
+            <label for="code">Code:</label>
+            <input id="codeProduct" type="text" name="code" placeholder="Code" required/>
+        </div>
+        <div>
+            <label for="stock">Stock:</label>
+            <input id="stockProduct" type="number" name="stock" placeholder="Stock" required/>
+        </div>
+        <input id="buttonForm" type="submit" placeholder="Create Product"/>
+    </form>
+
+<div class='container'>
+    <h1>Todos los productos</h1>
+    <div id='dinamicProducts'>
+        {{#each allProducts}}
+        <p>ID: {{this.id}}</p>
+        <p>Title: {{this.title}} </p>
+        <p>Description: {{this.description}}</p>
+        <p>Price: {{this.price}}</p>
+        <p>Thumbnail: {{this.thumbnail}}</p>
+        <p>Code: {{this.code}}</p>
+        <p>Stock: {{this.stock}}</p>
+        <div>
+            <button type="button" class='buttonDelete' value={{this.id}}></button>
+        </div>
+        {{/each}}
+    </div>
+</div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realtimeproducts.js"></script>
